@@ -10,63 +10,39 @@
 <style>
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   :root{
-    --bg:#0f0f14;
-    --bg2:#1a1a24;
-    --bg3:#24243a;
-    --accent:#c084fc;
-    --accent2:#818cf8;
-    --text:#f1f0ff;
-    --text2:#9b99c0;
-    --red:#f87171;
-    --green:#4ade80;
-    --border:#2e2e45;
-    --card:#1e1e2e;
+    --bg:#0f0f14;--bg2:#1a1a24;--bg3:#24243a;
+    --accent:#c084fc;--accent2:#818cf8;
+    --text:#f1f0ff;--text2:#9b99c0;
+    --red:#f87171;--green:#4ade80;--border:#2e2e45;--card:#1e1e2e;
   }
   html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;overflow:hidden}
-  .app{display:flex;flex-direction:column;height:100vh;height:100dvh;max-width:480px;margin:0 auto;position:relative}
-
-  /* HEADER */
+  .app{display:flex;flex-direction:column;height:100vh;height:100dvh;max-width:480px;margin:0 auto}
   .header{padding:16px 20px 12px;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0}
   .header h1{font-size:17px;font-weight:600;letter-spacing:0.05em;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .header-row{display:flex;justify-content:space-between;align-items:center}
   .header p{font-size:12px;color:var(--text2);margin-top:2px}
-
-  /* TAB BAR */
+  .sync-btn{padding:5px 12px;border:1px solid var(--border);background:var(--bg2);color:var(--text2);border-radius:20px;font-size:12px;cursor:pointer}
+  .sync-btn.syncing{color:var(--accent)}
   .tab-bar{display:flex;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0}
-  .tab{flex:1;padding:11px 2px;font-size:11px;text-align:center;cursor:pointer;color:var(--text2);border:none;background:none;border-bottom:2px solid transparent;transition:color 0.2s}
+  .tab{flex:1;padding:11px 2px;font-size:11px;text-align:center;cursor:pointer;color:var(--text2);border:none;background:none;border-bottom:2px solid transparent}
   .tab.active{color:var(--accent);border-bottom:2px solid var(--accent)}
-
-  /* PAGES */
   .pages{flex:1;overflow:hidden;position:relative}
-  .page{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;display:none}
+  .page{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px 32px;display:none}
   .page.active{display:block}
-
-  /* CARDS */
   .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px}
   .card-title{font-size:12px;color:var(--text2);font-weight:500;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:14px}
-
-  /* FORM */
   label{font-size:13px;color:var(--text2);display:block;margin-bottom:5px;margin-top:12px}
   label:first-of-type{margin-top:0}
   input,select{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:16px;background:var(--bg2);color:var(--text);-webkit-appearance:none;outline:none;transition:border-color 0.2s}
   input:focus,select:focus{border-color:var(--accent)}
   input[type=number]{font-size:24px;font-weight:600;text-align:center;padding:16px}
-
-  /* AMOUNT DISPLAY */
-  .amount-display{text-align:center;padding:8px 0 4px}
-  .amount-display span{font-size:13px;color:var(--text2)}
-
-  /* CATEGORY TAGS */
   .cat-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
   .tag{padding:7px 14px;border-radius:20px;font-size:13px;background:var(--bg2);color:var(--text2);cursor:pointer;border:1px solid var(--border);transition:all 0.15s}
   .tag.active{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:500}
-
-  /* BUTTON */
-  .btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;margin-top:16px;letter-spacing:0.03em;transition:opacity 0.15s}
+  .btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;margin-top:16px;transition:opacity 0.15s}
   .btn:active{opacity:0.8}
   .btn-sm{width:auto;padding:7px 14px;font-size:13px;margin-top:0;border-radius:8px}
   .btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border)}
-
-  /* EXPENSE LIST */
   .expense-item{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--border)}
   .expense-item:last-child{border-bottom:none}
   .exp-cat{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;background:var(--bg3);color:var(--accent);margin-bottom:4px}
@@ -75,46 +51,33 @@
   .exp-amount{font-size:18px;font-weight:700;text-align:right}
   .exp-payer{font-size:11px;color:var(--text2);text-align:right;margin-top:2px}
   .exp-del{font-size:11px;color:var(--text2);cursor:pointer;text-align:right;margin-top:4px;text-decoration:underline}
-
-  /* METRICS */
   .metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
   .metric{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px}
   .metric-label{font-size:11px;color:var(--text2);margin-bottom:6px}
   .metric-value{font-size:22px;font-weight:700}
-
-  /* SETTLE */
   .settle-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px}
-  .settle-from{font-size:14px;font-weight:500}
-  .settle-to{font-size:12px;color:var(--text2);margin:4px 0}
   .settle-amt{font-size:24px;font-weight:700;color:var(--red)}
   .badge-ok{display:inline-block;padding:6px 14px;border-radius:20px;background:rgba(74,222,128,0.15);color:var(--green);font-size:13px;font-weight:500}
-
-  /* BARS */
   .bar-wrap{margin-bottom:12px}
-  .bar-head{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;color:var(--text)}
+  .bar-head{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}
   .bar-bg{background:var(--bg2);border-radius:6px;height:8px;overflow:hidden}
   .bar-fill{height:8px;border-radius:6px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width 0.5s ease}
   .bar-fill.alt{background:linear-gradient(90deg,#38bdf8,#818cf8)}
-
-  /* SETTINGS */
   .setting-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
   .setting-row input{flex:1}
   .del-btn{width:36px;height:36px;flex-shrink:0;border:1px solid var(--border);background:var(--bg2);border-radius:8px;cursor:pointer;color:var(--text2);font-size:18px;display:flex;align-items:center;justify-content:center}
-
-  /* GAS BOX */
-  .gas-info{background:var(--bg2);border-radius:10px;padding:12px;margin-top:10px;font-size:13px;color:var(--text2);line-height:1.7}
-
-  /* EMPTY */
   .empty{text-align:center;padding:40px 16px;color:var(--text2);font-size:14px}
-
-  /* BOTTOM SAFE AREA */
-  .page{padding-bottom:32px}
+  .toast{position:fixed;bottom:40px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:999;opacity:0;transition:opacity 0.3s;pointer-events:none}
+  .toast.show{opacity:1}
 </style>
 </head>
 <body>
 <div class="app">
   <div class="header">
-    <h1 id="app-title">結婚家計簿</h1>
+    <div class="header-row">
+      <h1 id="app-title">結婚家計簿</h1>
+      <button class="sync-btn" id="sync-btn" onclick="syncFromSheet()">↻ 同期</button>
+    </div>
     <p id="header-sub">読み込み中...</p>
   </div>
   <div class="tab-bar">
@@ -126,7 +89,6 @@
   </div>
   <div class="pages">
 
-    <!-- ADD -->
     <div class="page active" id="page-add">
       <div class="card">
         <div class="card-title">金額</div>
@@ -143,21 +105,17 @@
         <label>日付</label>
         <input type="date" id="date">
       </div>
-      <button class="btn" onclick="addExpense()">追加する</button>
+      <button class="btn" id="add-btn" onclick="addExpense()">追加する</button>
     </div>
 
-    <!-- LIST -->
     <div class="page" id="page-list">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <span style="font-size:14px;color:var(--text2)" id="list-count"></span>
         <button class="btn btn-sm btn-ghost" onclick="clearAll()">全削除</button>
       </div>
-      <div class="card">
-        <div id="expense-list"></div>
-      </div>
+      <div class="card"><div id="expense-list"></div></div>
     </div>
 
-    <!-- SETTLE -->
     <div class="page" id="page-settle">
       <div class="metrics" id="metrics"></div>
       <div class="card">
@@ -166,7 +124,6 @@
       </div>
     </div>
 
-    <!-- CHART -->
     <div class="page" id="page-chart">
       <div class="card">
         <div class="card-title">カテゴリ別</div>
@@ -178,7 +135,6 @@
       </div>
     </div>
 
-    <!-- SETTINGS -->
     <div class="page" id="page-settings">
       <div class="card">
         <div class="card-title">メンバー名</div>
@@ -192,42 +148,41 @@
           <button class="btn btn-sm" onclick="addCategory()" style="width:auto;padding:12px 16px">追加</button>
         </div>
       </div>
-      <div class="card">
-        <div class="card-title">Google Sheets 連携</div>
-        <label>GAS Web App URL</label>
-        <input type="url" id="gas-url" placeholder="https://script.google.com/macros/s/..." oninput="saveGasUrl()">
-        <div class="gas-info">
-          スプレッドシートを新規作成 → ツール → Apps Script → コードを貼り付けて「デプロイ」→「ウェブアプリ」→「全員」で公開 → URLをここに貼る
-        </div>
-        <button class="btn btn-ghost btn-sm" style="margin-top:10px;width:100%;padding:12px" onclick="copyGasCode()">GASコードをコピー</button>
-      </div>
     </div>
 
   </div>
 </div>
+<div class="toast" id="toast"></div>
 
 <script>
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbxS4akIyTeIZfb72Xeutmu77XRbaXlRIOBfqPscmEifT8jCbBiDNF8Rfcsx5YghL6bZ/exec';
+
 let state = {
   members: ['びょん','つきの'],
   categories: ['食費','交通費','娯楽','日用品','その他'],
   expenses: [],
-  gasUrl: '',
   selectedCat: '食費'
 };
 
-function load(){
-  try{ const s=localStorage.getItem('kekkonkakeibo'); if(s) state=JSON.parse(s); }catch(e){}
-  if(!state.categories.includes(state.selectedCat)) state.selectedCat=state.categories[0]||'';
-  init();
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
 }
 
-function save(){ try{ localStorage.setItem('kekkonkakeibo',JSON.stringify(state)); }catch(e){} }
+function load(){
+  try{ const s=localStorage.getItem('kekkonkakeibo2'); if(s) state=JSON.parse(s); }catch(e){}
+  if(!state.categories.includes(state.selectedCat)) state.selectedCat=state.categories[0]||'';
+  init();
+  syncFromSheet();
+}
+
+function save(){ try{ localStorage.setItem('kekkonkakeibo2',JSON.stringify(state)); }catch(e){} }
 
 function init(){
   document.getElementById('header-sub').textContent = state.members.join(' と ');
   document.getElementById('date').value = new Date().toISOString().split('T')[0];
   renderCatTags(); renderPayer(); renderList(); renderMemberSettings(); renderCatSettings();
-  document.getElementById('gas-url').value = state.gasUrl||'';
 }
 
 function showPage(id,btn){
@@ -252,23 +207,55 @@ function renderPayer(){
     `<option value="${i}">${m}</option>`).join('');
 }
 
-function addExpense(){
+async function addExpense(){
   const amount=parseInt(document.getElementById('amount').value);
   const desc=document.getElementById('desc').value.trim();
   const date=document.getElementById('date').value;
   const payer=parseInt(document.getElementById('payer').value);
-  if(!amount||amount<=0){ alert('金額を入力してください'); return; }
-  if(!desc){ alert('説明を入力してください'); return; }
+  if(!amount||amount<=0){ showToast('金額を入力してください'); return; }
+  if(!desc){ showToast('説明を入力してください'); return; }
   const exp={id:Date.now(),amount,desc,date,payer,cat:state.selectedCat};
   state.expenses.unshift(exp);
   save();
   document.getElementById('amount').value='';
   document.getElementById('desc').value='';
-  if(state.gasUrl) sendToGas(exp);
-  // feedback
-  const btn=document.querySelector('#page-add .btn');
-  btn.textContent='✓ 追加しました！';
-  setTimeout(()=>btn.textContent='追加する',1500);
+  renderList();
+  const btn=document.getElementById('add-btn');
+  btn.textContent='送信中...';
+  try{
+    await fetch(GAS_URL,{method:'POST',body:JSON.stringify({date:exp.date,desc:exp.desc,cat:exp.cat,amount:exp.amount,payer:state.members[exp.payer]})});
+    showToast('✓ 追加してスプレッドシートに保存しました');
+  }catch(e){
+    showToast('✓ 追加しました（オフライン）');
+  }
+  btn.textContent='追加する';
+}
+
+async function syncFromSheet(){
+  const btn=document.getElementById('sync-btn');
+  btn.textContent='同期中...'; btn.classList.add('syncing');
+  try{
+    const res = await fetch(GAS_URL);
+    const data = await res.json();
+    if(Array.isArray(data) && data.length>0){
+      state.expenses = data.map((d,i)=>({
+        id: Date.now()+i,
+        date: d.date,
+        desc: d.desc,
+        cat: d.cat,
+        amount: parseInt(d.amount)||0,
+        payer: state.members.indexOf(d.payer) >= 0 ? state.members.indexOf(d.payer) : 0
+      })).reverse();
+      save();
+      renderList();
+      showToast(`✓ ${data.length}件を同期しました`);
+    } else {
+      showToast('データなし（スプレッドシートが空です）');
+    }
+  }catch(e){
+    showToast('同期失敗（GAS URLを確認してください）');
+  }
+  btn.textContent='↻ 同期'; btn.classList.remove('syncing');
 }
 
 function deleteExpense(id){
@@ -278,32 +265,32 @@ function deleteExpense(id){
 }
 
 function clearAll(){
-  if(!confirm('全ての支出を削除しますか？')) return;
+  if(!confirm('全ての支出を削除しますか？（スプレッドシートは削除されません）')) return;
   state.expenses=[]; save(); renderList();
 }
 
 function renderList(){
   const el=document.getElementById('expense-list');
   document.getElementById('list-count').textContent=`${state.expenses.length}件`;
-  if(!state.expenses.length){ el.innerHTML='<div class="empty">支出がまだありません</div>'; return; }
+  if(!state.expenses.length){ el.innerHTML='<div class="empty">支出がまだありません<br><small style="font-size:11px;margin-top:8px;display:block">↻ 同期ボタンで読み込めます</small></div>'; return; }
   el.innerHTML=state.expenses.map(e=>`
     <div class="expense-item">
       <div style="flex:1;min-width:0;padding-right:12px">
-        <div class="exp-cat">${e.cat}</div>
+        <div class="exp-cat">${e.cat||'未分類'}</div>
         <div class="exp-title">${e.desc}</div>
         <div class="exp-date">${e.date}</div>
       </div>
       <div>
-        <div class="exp-amount">¥${e.amount.toLocaleString()}</div>
-        <div class="exp-payer">${state.members[e.payer]}</div>
+        <div class="exp-amount">¥${(e.amount||0).toLocaleString()}</div>
+        <div class="exp-payer">${state.members[e.payer]||e.payer}</div>
         <div class="exp-del" onclick="deleteExpense(${e.id})">削除</div>
       </div>
     </div>`).join('');
 }
 
 function renderSettle(){
-  const total=state.expenses.reduce((s,e)=>s+e.amount,0);
-  const paid=state.members.map((_,i)=>state.expenses.filter(e=>e.payer===i).reduce((s,e)=>s+e.amount,0));
+  const total=state.expenses.reduce((s,e)=>s+(e.amount||0),0);
+  const paid=state.members.map((_,i)=>state.expenses.filter(e=>e.payer===i).reduce((s,e)=>s+(e.amount||0),0));
   const share=total/state.members.length;
   document.getElementById('metrics').innerHTML=`
     <div class="metric"><div class="metric-label">合計支出</div><div class="metric-value">¥${total.toLocaleString()}</div></div>
@@ -319,8 +306,8 @@ function renderSettle(){
       if(i!==j&&diffs[j]<0&&diffs[i]>0){
         const amt=Math.min(diffs[i],-diffs[j]);
         if(amt>1) html+=`<div class="settle-card">
-          <div class="settle-from">${state.members[j]}</div>
-          <div class="settle-to">↓ ${state.members[i]} へ支払う</div>
+          <div style="font-size:14px;font-weight:500">${state.members[j]}</div>
+          <div style="font-size:12px;color:var(--text2);margin:4px 0">↓ ${state.members[i]} へ支払う</div>
           <div class="settle-amt">¥${Math.round(amt).toLocaleString()}</div>
         </div>`;
       }
@@ -332,15 +319,14 @@ function renderSettle(){
 function renderCharts(){
   const catTotals={};
   state.categories.forEach(c=>catTotals[c]=0);
-  state.expenses.forEach(e=>{ if(catTotals[e.cat]!==undefined) catTotals[e.cat]+=e.amount; });
+  state.expenses.forEach(e=>{ if(catTotals[e.cat]!==undefined) catTotals[e.cat]+=(e.amount||0); else catTotals[e.cat]=(e.amount||0); });
   const catTotal=Object.values(catTotals).reduce((a,b)=>a+b,0)||1;
-  document.getElementById('chart-bars').innerHTML=state.categories.filter(c=>catTotals[c]>0).map(c=>`
+  document.getElementById('chart-bars').innerHTML=Object.entries(catTotals).filter(([,v])=>v>0).map(([c,v])=>`
     <div class="bar-wrap">
-      <div class="bar-head"><span>${c}</span><span>¥${catTotals[c].toLocaleString()}</span></div>
-      <div class="bar-bg"><div class="bar-fill" style="width:${Math.round(catTotals[c]/catTotal*100)}%"></div></div>
+      <div class="bar-head"><span>${c}</span><span>¥${v.toLocaleString()}</span></div>
+      <div class="bar-bg"><div class="bar-fill" style="width:${Math.round(v/catTotal*100)}%"></div></div>
     </div>`).join('')||'<div class="empty" style="padding:16px">データなし</div>';
-
-  const mt=state.members.map((_,i)=>state.expenses.filter(e=>e.payer===i).reduce((s,e)=>s+e.amount,0));
+  const mt=state.members.map((_,i)=>state.expenses.filter(e=>e.payer===i).reduce((s,e)=>s+(e.amount||0),0));
   const mTotal=mt.reduce((a,b)=>a+b,0)||1;
   document.getElementById('member-bars').innerHTML=state.members.map((m,i)=>`
     <div class="bar-wrap">
@@ -375,27 +361,6 @@ function addCategory(){
   if(!v) return;
   state.categories.push(v); document.getElementById('new-cat').value='';
   save(); renderCatTags(); renderCatSettings();
-}
-
-function saveGasUrl(){ state.gasUrl=document.getElementById('gas-url').value; save(); }
-
-function copyGasCode(){
-  const code=`function doPost(e) {
-  const data = JSON.parse(e.postData.contents);
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sh = ss.getSheetByName('支出') || ss.insertSheet('支出');
-  if(sh.getLastRow()===0){
-    sh.appendRow(['日付','説明','カテゴリ','金額','支払者']);
-  }
-  sh.appendRow([data.date, data.desc, data.cat, data.amount, data.payer]);
-  return ContentService.createTextOutput('OK');
-}`;
-  if(navigator.clipboard){ navigator.clipboard.writeText(code).then(()=>alert('コピーしました！')); }
-  else{ alert(code); }
-}
-
-function sendToGas(exp){
-  fetch(state.gasUrl,{method:'POST',body:JSON.stringify({date:exp.date,desc:exp.desc,cat:exp.cat,amount:exp.amount,payer:state.members[exp.payer]})}).catch(()=>{});
 }
 
 load();
