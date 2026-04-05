@@ -214,7 +214,9 @@ async function addExpense(){
   const payer=parseInt(document.getElementById('payer').value);
   if(!amount||amount<=0){ showToast('金額を入力してください'); return; }
   if(!desc){ showToast('説明を入力してください'); return; }
-  const exp={id:Date.now(),amount,desc,date,payer,cat:state.selectedCat};
+  const now=new Date();
+  const time=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  const exp={id:Date.now(),amount,desc,date,time,payer,cat:state.selectedCat};
   state.expenses.unshift(exp);
   save();
   document.getElementById('amount').value='';
@@ -223,7 +225,7 @@ async function addExpense(){
   const btn=document.getElementById('add-btn');
   btn.textContent='送信中...';
   try{
-    await fetch(GAS_URL,{method:'POST',body:JSON.stringify({date:exp.date,desc:exp.desc,cat:exp.cat,amount:exp.amount,payer:state.members[exp.payer]})});
+    await fetch(GAS_URL,{method:'POST',body:JSON.stringify({date:exp.date,time:exp.time,desc:exp.desc,cat:exp.cat,amount:exp.amount,payer:state.members[exp.payer]})});
     showToast('✓ 追加してスプレッドシートに保存しました');
   }catch(e){
     showToast('✓ 追加しました（オフライン）');
@@ -241,6 +243,7 @@ async function syncFromSheet(){
       state.expenses = data.map((d,i)=>({
         id: Date.now()+i,
         date: d.date,
+        time: d.time||'',
         desc: d.desc,
         cat: d.cat,
         amount: parseInt(d.amount)||0,
@@ -278,7 +281,7 @@ function renderList(){
       <div style="flex:1;min-width:0;padding-right:12px">
         <div class="exp-cat">${e.cat||'未分類'}</div>
         <div class="exp-title">${e.desc}</div>
-        <div class="exp-date">${e.date}</div>
+        <div class="exp-date">${e.date}${e.time?' '+e.time:''}</div>
       </div>
       <div>
         <div class="exp-amount">¥${(e.amount||0).toLocaleString()}</div>
