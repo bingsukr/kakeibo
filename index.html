@@ -369,15 +369,41 @@ async function syncFromSheet(){
     const res = await fetch(GAS_URL);
     const data = await res.json();
     if(Array.isArray(data) && data.length>0){
-      state.expenses = data.map((d,i)=>({
-        id: Date.now()+i,
-        date: d.date,
-        time: d.time||'',
-        desc: d.desc,
-        cat: NEW_CATEGORIES.includes(d.cat) ? d.cat : mapByKeyword(d.desc, d.cat),
-        amount: parseInt(d.amount)||0,
-        payer: state.members.indexOf(d.payer) >= 0 ? state.members.indexOf(d.payer) : 0
-      })).reverse();
+      state.expenses = data.map((d,i)=>{
+        // 日付を YYYY-MM-DD 形式に正規化
+        let dateStr = '';
+        if(d.date){
+          if(d.date instanceof Date){
+            dateStr = `${d.date.getFullYear()}-${String(d.date.getMonth()+1).padStart(2,'0')}-${String(d.date.getDate()).padStart(2,'0')}`;
+          } else {
+            const s = String(d.date).trim();
+            const m = s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+            if(m){
+              dateStr = `${m[1]}-${String(parseInt(m[2])).padStart(2,'0')}-${String(parseInt(m[3])).padStart(2,'0')}`;
+            } else {
+              try{
+                const parsed = new Date(s);
+                if(!isNaN(parsed.getTime())){
+                  dateStr = `${parsed.getFullYear()}-${String(parsed.getMonth()+1).padStart(2,'0')}-${String(parsed.getDate()).padStart(2,'0')}`;
+                } else {
+                  dateStr = s;
+                }
+              }catch(e){ dateStr = s; }
+            }
+          }
+        }
+        // カテゴリを新形式にマッピング
+        const cat = NEW_CATEGORIES.includes(d.cat) ? d.cat : mapByKeyword(d.desc, d.cat);
+        return {
+          id: Date.now()+i,
+          date: dateStr,
+          time: d.time||'',
+          desc: d.desc,
+          cat: cat,
+          amount: parseInt(d.amount)||0,
+          payer: state.members.indexOf(d.payer) >= 0 ? state.members.indexOf(d.payer) : 0
+        };
+      }).reverse();
       save();
       renderList();
       renderBudget();
@@ -455,7 +481,12 @@ function renderSettle(){
 function renderCharts(){
   const catTotals={};
   state.categories.forEach(c=>catTotals[c]=0);
-  state.expenses.forEach(e=>{ if(catTotals[e.cat]!==undefined) catTotals[e.cat]+=(e.amount||0); else catTotals[e.cat]=(e.amount||0); });
+  state.expenses.forEach(e=>{
+    let cat = e.cat;
+    if(!NEW_CATEGORIES.includes(cat)) cat = mapByKeyword(e.desc, cat);
+    if(catTotals[cat]!==undefined) catTotals[cat]+=(e.amount||0);
+    else catTotals[cat]=(e.amount||0);
+  });
   const catTotal=Object.values(catTotals).reduce((a,b)=>a+b,0)||1;
   document.getElementById('chart-bars').innerHTML=Object.entries(catTotals).filter(([,v])=>v>0).map(([c,v])=>`
     <div class="bar-wrap">
@@ -471,17 +502,46 @@ function renderCharts(){
     </div>`).join('');
 }
 
+// 日付文字列を YYYY-MM 形式に正規化する
+function normalizeYM(dateStr){
+  if(!dateStr) return '';
+  // Dateオブジェクトの場合
+  if(dateStr instanceof Date){
+    return `${dateStr.getFullYear()}-${String(dateStr.getMonth()+1).padStart(2,'0')}`;
+  }
+  const s = String(dateStr).trim();
+  // ISO形式 (2026-05-23T15:00:00.000Z) や (2026-05-23) や (2026/05/23) に対応
+  // まず YYYY-MM-DD のパターンを抽出
+  let m = s.match(/^(\d{4})[-\/](\d{1,2})/);
+  if(m){
+    return `${m[1]}-${String(parseInt(m[2])).padStart(2,'0')}`;
+  }
+  // Dateにパースしてみる
+  try{
+    const d = new Date(s);
+    if(!isNaN(d.getTime())){
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    }
+  }catch(e){}
+  return '';
+}
+
 // 予算機能
 function renderBudget(){
   checkBudgetReset();
   const now = new Date();
   const ym = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
 
-  const monthExpenses = state.expenses.filter(e => e.date && String(e.date).startsWith(ym));
+  const monthExpenses = state.expenses.filter(e => normalizeYM(e.date) === ym);
   const usedByCat = {};
   state.categories.forEach(c => usedByCat[c] = 0);
   monthExpenses.forEach(e => {
-    if(usedByCat[e.cat] !== undefined) usedByCat[e.cat] += (e.amount||0);
+    // カテゴリが新形式じゃない場合は動的にマッピング
+    let cat = e.cat;
+    if(!NEW_CATEGORIES.includes(cat)){
+      cat = mapByKeyword(e.desc, cat);
+    }
+    if(usedByCat[cat] !== undefined) usedByCat[cat] += (e.amount||0);
   });
 
   const totalBudget = Object.values(state.budget).reduce((a,b)=>a+b,0);
